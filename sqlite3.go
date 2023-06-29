@@ -250,7 +250,7 @@ type SQLiteDriverConnector struct {
 	conn   driver.Conn
 }
 
-func (c SQLiteDriverConnector) Connect(_ context.Context) (driver.Conn, error) {
+func (c *SQLiteDriverConnector) Connect(_ context.Context) (driver.Conn, error) {
 	err := c.Close()
 	if err != nil {
 		return nil, err
@@ -262,16 +262,24 @@ func (c SQLiteDriverConnector) Connect(_ context.Context) (driver.Conn, error) {
 	return conn, err
 }
 
-func (c SQLiteDriverConnector) Driver() driver.Driver {
+func (c *SQLiteDriverConnector) Driver() driver.Driver {
 	return &c.driver
 }
 
-// io.Closer
-func (c SQLiteDriverConnector) Close() error {
+func (c *SQLiteDriverConnector) close() error {
 	if c.conn != nil {
-		return c.conn.Close()
+		err := c.conn.Close()
+		if err == nil {
+			c.conn = nil
+		}
+		return err
 	}
 	return nil
+}
+
+// io.Closer
+func (c *SQLiteDriverConnector) Close() error {
+	return c.close()
 }
 
 // driver.DriverContext
