@@ -256,7 +256,7 @@ func (c SQLiteDriverConnector) Connect(_ context.Context) (driver.Conn, error) {
 		return nil, err
 	}
 	conn, err := c.driver.Open(c.dsn)
-	if err != nil {
+	if err == nil {
 		c.conn = conn
 	}
 	return conn, err
