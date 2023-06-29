@@ -244,6 +244,27 @@ func init() {
 	}
 }
 
+type SQLiteDriverConnector struct {
+	driver SQLiteDriver
+	dsn    string
+}
+
+func (c SQLiteDriverConnector) Connect(_ context.Context) (driver.Conn, error) {
+	return c.driver.Open(c.dsn)
+}
+
+func (c SQLiteDriverConnector) Driver() driver.Driver {
+	return &c.driver
+}
+
+// driver.DriverContext
+func (d SQLiteDriver) OpenConnector(dsn string) (driver.Connector, error) {
+	return SQLiteDriverConnector{
+		driver: d,
+		dsn:    dsn,
+	}, nil
+}
+
 // Version returns SQLite library version information.
 func Version() (libVersion string, libVersionNumber int, sourceID string) {
 	libVersion = C.GoString(C.sqlite3_libversion())
