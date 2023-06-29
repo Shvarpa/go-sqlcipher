@@ -247,14 +247,31 @@ func init() {
 type SQLiteDriverConnector struct {
 	driver SQLiteDriver
 	dsn    string
+	conn   driver.Conn
 }
 
 func (c SQLiteDriverConnector) Connect(_ context.Context) (driver.Conn, error) {
-	return c.driver.Open(c.dsn)
+	err := c.Close()
+	if err != nil {
+		return nil, err
+	}
+	conn, err := c.driver.Open(c.dsn)
+	if err != nil {
+		c.conn = conn
+	}
+	return conn, err
 }
 
 func (c SQLiteDriverConnector) Driver() driver.Driver {
 	return &c.driver
+}
+
+// io.Closer
+func (c SQLiteDriverConnector) Close() error {
+	if c.conn != nil {
+		return c.conn.Close()
+	}
+	return nil
 }
 
 // driver.DriverContext
