@@ -251,7 +251,7 @@ type SQLiteDriverConnector struct {
 }
 
 func (c *SQLiteDriverConnector) Connect(_ context.Context) (driver.Conn, error) {
-	err := c.Close()
+	err := c.close()
 	if err != nil {
 		return nil, err
 	}
