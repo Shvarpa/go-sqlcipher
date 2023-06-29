@@ -276,7 +276,7 @@ func (c SQLiteDriverConnector) Close() error {
 
 // driver.DriverContext
 func (d SQLiteDriver) OpenConnector(dsn string) (driver.Connector, error) {
-	return SQLiteDriverConnector{
+	return &SQLiteDriverConnector{
 		driver: d,
 		dsn:    dsn,
 	}, nil
